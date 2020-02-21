@@ -4,9 +4,190 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BillCalculator"
+        xmlns:Models="clr-namespace:BillCalculator.Models"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="400" Width="550"
+        Loaded="Window_Loaded">
+    <Window.Resources>
+        <CollectionViewSource x:Key="orderDetail"
+                              d:DesignSource="{d:DesignInstance {x:Type Models:Order}, CreateList=True}"/>
+
+        <CollectionViewSource x:Key="orderList"
+                              d:DesignSource="{d:DesignInstance {x:Type Models:OrderItem}, CreateList=True}"/>
+        <local:CollectionToStringConverter x:Key="Collection2StringConverter" />
+    </Window.Resources>
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <Grid x:Name="gridMenu"
+              Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="126" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="*" />
+
+            </Grid.RowDefinitions>
+            <Label Content="Beverage:" 
+                   Grid.Row="1" 
+                   Grid.Column="0" 
+                   HorizontalAlignment="Right" 
+                   VerticalAlignment="Top"
+                   Margin="0,3,1.333,0" />
+            <ComboBox x:Name="BeverageComboBox"
+                      SelectionChanged="ComboBox_SelectionChanged"
+                      DropDownClosed="ComboBox_DropDownClosed"
+                      DisplayMemberPath="Title" 
+                      Grid.Row="1"
+                      Grid.Column="1"
+                      HorizontalAlignment="Left" 
+                      VerticalAlignment="Top" 
+                      Margin="3" 
+                      Width="120" 
+                      />
+
+            <Label Content="Appetizer:" 
+                   Grid.Row="2" 
+                   Grid.Column="0"
+                   HorizontalAlignment="Right" 
+                   VerticalAlignment="Top"
+                   Margin="3" />
+            <ComboBox x:Name="AppetizerComboBox"
+                      SelectionChanged="ComboBox_SelectionChanged"
+                      DropDownClosed="ComboBox_DropDownClosed"
+                      DisplayMemberPath="Title"
+                      Grid.Row="2"
+                      Grid.Column="1"                  
+                      HorizontalAlignment="Left" 
+                      VerticalAlignment="Top" 
+                      Margin="4.667,3.333,0,0" 
+                      Width="120"/>
+
+            <Label Content="Main Course:" 
+                   Grid.Row="3"
+                   Grid.Column="0"
+                   HorizontalAlignment="Right" 
+                   VerticalAlignment="Top"
+                   Margin="0,2.667,1.333,0" />
+            <ComboBox x:Name="MainCourseComboBox"
+                      SelectionChanged="ComboBox_SelectionChanged"
+                      DropDownClosed="ComboBox_DropDownClosed"
+                      DisplayMemberPath="Title" 
+                      Grid.Row="3"
+                      Grid.Column="1"
+                      HorizontalAlignment="Left" 
+                      VerticalAlignment="Top" 
+                      Margin="4.667,2.667,0,0" 
+                      Width="120" />
+
+            <Label Content="Dessert:" 
+                   Grid.Row="4"
+                   Grid.Column="0"
+                   HorizontalAlignment="Right" 
+                   VerticalAlignment="Top"
+                   Margin="0,3,1.333,0" />
+            <ComboBox x:Name="DessertComboBox"
+                      SelectionChanged="ComboBox_SelectionChanged"
+                      DropDownClosed="ComboBox_DropDownClosed"
+                      DisplayMemberPath="Title"
+                      Grid.Row="4"
+                      Grid.Column="1"
+                      HorizontalAlignment="Left" 
+                      VerticalAlignment="Top" 
+                      Margin="4.667,3,0,0" 
+                      Width="120"/>
+
+        </Grid>
+        <Grid
+            Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="5*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="5*" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+            <Label Content="Selected Items:" 
+                   Grid.Row="0"
+                   HorizontalAlignment="Left" 
+                   VerticalAlignment="Top"
+                   Grid.ColumnSpan="2"
+                   Margin="3" />
+            <DataGrid 
+                x:Name="orderListDG" 
+                AutoGenerateColumns="False"
+                SelectedCellsChanged="OrderListDG_SelectedCellsChanged"
+                EnableRowVirtualization="True"
+                ItemsSource="{Binding Source={StaticResource orderList}}"
+                Grid.Row="1"
+                Grid.ColumnSpan="2"
+                AlternatingRowBackground="AliceBlue"
+                RowHeight="30"
+                RowDetailsVisibilityMode="VisibleWhenSelected">
+                <DataGrid.Columns>
+                    <DataGridTextColumn x:Name="titleColume"
+                                        IsReadOnly="True"
+                                        Binding="{Binding Product.Title}"
+                                        Header="Title"
+                                        Width="100" />
+                    <DataGridTextColumn x:Name="categoryColumn"
+                                        IsReadOnly="True"
+                                        Binding="{Binding Product.Category.Name}"
+                                        Header="Category"
+                                        Width="80" />
+                    <DataGridTextColumn x:Name="QuantityColumn"
+                                        Binding="{Binding Quantity}"
+                                        Header="Quantity"
+                                        Width="SizeToHeader" />
+                    <DataGridTextColumn x:Name="priceColumn"
+                                        IsReadOnly="True"
+                                        Binding="{Binding Total, StringFormat={}{0:c}}"
+                                        Header="Price"
+                                        Width="70" />
+                </DataGrid.Columns>
+            </DataGrid>
+            <Button 
+                x:Name="ButtonClear"
+                Grid.Row="2" 
+                Grid.Column="0"
+                Content="Clear"
+                Click="ButtonClear_Click"
+                HorizontalAlignment="Left" Margin="10" VerticalAlignment="Top" Width="75" Height="25"/>
+            <Button 
+                x:Name="ButtonInvoice"
+                Grid.Row="3" 
+                Grid.Column="0"
+                Content="Invoice"
+                Click="ButtonInvoice_Click"
+                HorizontalAlignment="Left" Margin="10" VerticalAlignment="Top" Width="75" Height="25"/>
+
+
+            <StackPanel
+                x:Name="Bill"
+                DataContext="{Binding ElementName=orderListDG}"
+                Grid.Row="2"
+                Grid.RowSpan="3"
+                Grid.Column="1"
+                HorizontalAlignment="Left" Margin="10" VerticalAlignment="Top" Width="200" Height="60">
+                <TextBlock Text="{Binding Source={StaticResource orderDetail}, Path=SubTotal, StringFormat=Sub Total: {0:c}}"/>
+                <TextBlock Text="{Binding Source={StaticResource orderDetail}, Path=Tax, StringFormat=Tax: {0:c}}"/>
+                <TextBlock Text="{Binding Source={StaticResource orderDetail}, Path=Total, StringFormat=Total: {0:c}}"/>
+            </StackPanel>
+
+        </Grid>
     </Grid>
 </Window>
